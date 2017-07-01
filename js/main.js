@@ -27,8 +27,24 @@ function clearTable(selectedNode) {
 }
 }
 
-var test = document.getElementById("test");
+function sortJsonArray(sortingClose, jsonArray) {
+  var close = sortingClose.value;
+  if ( close === "age" || close === "id") {
+    jsonArray.sort(function(a, b) {
+    return a[close] - b[close];
+    });
+  }
+  else {
+    jsonArray.sort(function(a, b){
+      if(a[close] < b[close]) return -1;
+      if(a[close] > b[close]) return 1;
+      return 0;
+    });
+  }
+}
 
+var test = document.getElementById("test");
+var sortingType = document.getElementById("sortingType");
 
 xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -36,11 +52,9 @@ xhttp.onreadystatechange = function() {
       customers = JSON.parse(this.responseText);
       createLines(customers);
 
-      test.onclick = function() {
+      sortingType.onchange = function() {
         clearTable(tBody);
-        customers.sort(function(a, b) {
-        return a.age - b.age;
-        });
+        sortJsonArray(this, customers);
         createLines(customers);
       };
 
