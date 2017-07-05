@@ -15,6 +15,28 @@ var htmlContent = {
 // Object to deal with display of customers
 var customersManager = {
   customers : null,
+
+  sortString : function(jsonArray) {
+    jsonArray.sort(function(a, b){
+      if(a[htmlContent.sortingType.value] < b[htmlContent.sortingType.value]) return -1;
+      if(a[htmlContent.sortingType.value] > b[htmlContent.sortingType.value]) return 1;
+      return 0;
+    });
+  },
+  sortInteger : function(jsonArray) {
+    jsonArray.sort(function(a, b) {
+    return a[htmlContent.sortingType.value] - b[htmlContent.sortingType.value];
+    });
+  },
+  sort : function(jsonArray) {
+    if (typeof jsonArray[0][htmlContent.sortingType.value] === "string" ) {
+      this.sortString(jsonArray);
+    }
+    else {
+      this.sortInteger(jsonArray);
+    }
+  },
+
   displayCustomerProperty : function(customer) {
     var tableRow = htmlContent.tableElement("TR");
     for(var data in customer) {
@@ -25,7 +47,11 @@ var customersManager = {
     }
     return tableRow;
   },
-  showCustomers : function() {
+  showCustomers : function(sort = false) {
+    htmlContent.clearElement(htmlContent.tableBody);
+    if(sort) {
+      this.sort(this.customers);
+    }
     for(var prop in this.customers) {
       var customer = this.customers[prop];
       var line = this.displayCustomerProperty(customer);
@@ -37,29 +63,6 @@ var customersManager = {
 // Object to deal with xml requests
 var xhttp = new XMLHttpRequest();
 
-
-
-// Function to creat a table line for each client from the request. Take a json mutlidimensional object as argument
-
-
-function sortJsonArray(sortingClose, jsonArray) {
-  var close = sortingClose.value;
-  if ( close === "age" || close === "id") {
-    jsonArray.sort(function(a, b) {
-    return a[close] - b[close];
-    });
-  }
-  else {
-    jsonArray.sort(function(a, b){
-      if(a[close] < b[close]) return -1;
-      if(a[close] > b[close]) return 1;
-      return 0;
-    });
-  }
-}
-
-// var sortingType = document.getElementById("sortingType");
-
 xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
 
@@ -67,9 +70,7 @@ xhttp.onreadystatechange = function() {
       customersManager.showCustomers();
 
       htmlContent.sortingType.onchange = function() {
-        htmlContent.clearElement(tBody);
-        sortJsonArray(this, customersManager.customers);
-        customersManager.showCustomers();
+        customersManager.showCustomers(true);
       };
 
    }
