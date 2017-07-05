@@ -1,3 +1,4 @@
+// Object to deal with HTML elements and creation
 var htmlContent = {
   tableBody : document.getElementById("tBody"),
   sortingType : document.getElementById("sortingType"),
@@ -11,39 +12,28 @@ var htmlContent = {
   }
 };
 
+// Object to deal with display of customers
 var customersManager = {
   customers : null,
   displayCustomerProperty : function(customer) {
+    var tableRow = htmlContent.tableElement("TR");
     for(var data in customer) {
       var tableCell = htmlContent.tableElement("TD");
       var textnode = document.createTextNode(customer[data]);
       tableCell.appendChild(textnode);
       tableRow.appendChild(tableCell);
     }
+    return tableRow;
   },
-  // displayCustomerLine : function() {
-  //   for(var prop in this.customers) {
-  //     alert(prop);
-  //     var customer = this.customers[prop];
-  //     var tableRow = htmlContent.tableElement("TR");
-  //     this.displayCustomerProperty(customer);
-  //     htmlContent.tableBody.appendChild(tableRow);
-  //   }
-  // },
   showCustomers : function() {
     for(var prop in this.customers) {
       var customer = this.customers[prop];
-      var tableRow = htmlContent.tableElement("TR");
-      for(var data in customer) {
-        var tableCell = htmlContent.tableElement("TD");
-        var textnode = document.createTextNode(customer[data]);
-        tableCell.appendChild(textnode);
-        tableRow.appendChild(tableCell);
-      }
-      htmlContent.tableBody.appendChild(tableRow);
+      var line = this.displayCustomerProperty(customer);
+      htmlContent.tableBody.appendChild(line);
     }
-  }
+  },
 };
+
 // Object to deal with xml requests
 var xhttp = new XMLHttpRequest();
 
