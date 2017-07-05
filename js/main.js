@@ -1,31 +1,56 @@
-// Object to deal with xml requests
-var xhttp = new XMLHttpRequest();
+var htmlContent = {
+  tableBody : document.getElementById("tBody"),
+  sortingType : document.getElementById("sortingType"),
+  tableElement : function(element){
+    return document.createElement(element);
+  },
+  clearElement : function(element) {
+    while (element.firstChild) {
+      element.removeChild(element.firstChild);
+  }
+  }
+};
 
-// Get the body table to add the lines
-var tBody = document.getElementById("tBody");
-
-// Store the different customers
-var customers = null;
-
-// Function to creat a table line for each client from the request. Take a json mutlidimensional object as argument
-function createLines(jsonObject) {
-  for(var prop in jsonObject) {
-    var tableRow = document.createElement("TR");
-    for(var data in jsonObject[prop]) {
-      var tableCell = document.createElement("TD");
-      var textnode = document.createTextNode(jsonObject[prop][data]);
+var customersManager = {
+  customers : null,
+  displayCustomerProperty : function(customer) {
+    for(var data in customer) {
+      var tableCell = htmlContent.tableElement("TD");
+      var textnode = document.createTextNode(customer[data]);
       tableCell.appendChild(textnode);
       tableRow.appendChild(tableCell);
     }
-    tBody.appendChild(tableRow);
+  },
+  // displayCustomerLine : function() {
+  //   for(var prop in this.customers) {
+  //     alert(prop);
+  //     var customer = this.customers[prop];
+  //     var tableRow = htmlContent.tableElement("TR");
+  //     this.displayCustomerProperty(customer);
+  //     htmlContent.tableBody.appendChild(tableRow);
+  //   }
+  // },
+  showCustomers : function() {
+    for(var prop in this.customers) {
+      var customer = this.customers[prop];
+      var tableRow = htmlContent.tableElement("TR");
+      for(var data in customer) {
+        var tableCell = htmlContent.tableElement("TD");
+        var textnode = document.createTextNode(customer[data]);
+        tableCell.appendChild(textnode);
+        tableRow.appendChild(tableCell);
+      }
+      htmlContent.tableBody.appendChild(tableRow);
+    }
   }
-}
+};
+// Object to deal with xml requests
+var xhttp = new XMLHttpRequest();
 
-function clearTable(selectedNode) {
-  while (selectedNode.firstChild) {
-    selectedNode.removeChild(selectedNode.firstChild);
-}
-}
+
+
+// Function to creat a table line for each client from the request. Take a json mutlidimensional object as argument
+
 
 function sortJsonArray(sortingClose, jsonArray) {
   var close = sortingClose.value;
@@ -43,19 +68,18 @@ function sortJsonArray(sortingClose, jsonArray) {
   }
 }
 
-var test = document.getElementById("test");
-var sortingType = document.getElementById("sortingType");
+// var sortingType = document.getElementById("sortingType");
 
 xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
 
-      customers = JSON.parse(this.responseText);
-      createLines(customers);
+      customersManager.customers = JSON.parse(this.responseText);
+      customersManager.showCustomers();
 
-      sortingType.onchange = function() {
-        clearTable(tBody);
-        sortJsonArray(this, customers);
-        createLines(customers);
+      htmlContent.sortingType.onchange = function() {
+        htmlContent.clearElement(tBody);
+        sortJsonArray(this, customersManager.customers);
+        customersManager.showCustomers();
       };
 
    }
