@@ -8,7 +8,13 @@ var htmlContent = {
   clearElement : function(element) {
     while (element.firstChild) {
       element.removeChild(element.firstChild);
-  }
+    }
+  },
+  createTableCell : function(cellDestination, content) {
+    var tableCell = this.tableElement("TD");
+    var textnode = document.createTextNode(content);
+    tableCell.appendChild(textnode);
+    cellDestination.appendChild(tableCell);
   }
 };
 
@@ -40,10 +46,7 @@ var customersManager = {
   displayCustomerProperty : function(customer) {
     var tableRow = htmlContent.tableElement("TR");
     for(var data in customer) {
-      var tableCell = htmlContent.tableElement("TD");
-      var textnode = document.createTextNode(customer[data]);
-      tableCell.appendChild(textnode);
-      tableRow.appendChild(tableCell);
+      htmlContent.createTableCell(tableRow, customer[data]);
     }
     return tableRow;
   },
